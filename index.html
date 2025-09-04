@@ -19,7 +19,7 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       padding: 2rem;
       width: 100%;
-      max-width: 600px;
+      max-width: 700px;
     }
 
     h1 {
@@ -53,6 +53,7 @@
     li {
       display: flex;
       align-items: center;
+      gap: 0.5rem;
       padding: 0.6rem 0;
       border-bottom: 1px solid #f0f0f0;
       cursor: pointer;
@@ -68,12 +69,11 @@
     }
 
     input[type="checkbox"] {
-      margin-right: 0.8rem;
       transform: scale(1.2);
       cursor: pointer;
     }
 
-    .paid {
+    .paid span {
       text-decoration: line-through;
       color: #999;
     }
@@ -82,6 +82,15 @@
       font-weight: bold;
       color: #ff385c;
       margin-left: auto;
+    }
+
+    .valor {
+      width: 80px;
+      text-align: right;
+      padding: 0.2rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 0.9rem;
     }
 
     .actions {
@@ -112,7 +121,7 @@
       border-radius: 8px;
       color: #2e7d32;
       font-weight: bold;
-      text-align: center;
+      text-align: left;
       position: relative;
     }
 
@@ -141,25 +150,25 @@
     <div class="date" id="today"></div>
 
     <h2>Minhas</h2>
-    <ul>
-      <li><input type="checkbox"> <span>Inter (Meu e-mail)</span> <span class="day">05</span></li>
-      <li><input type="checkbox"> <span>Nu (Meu e-mail)</span> <span class="day">10</span></li>
-      <li><input type="checkbox"> <span>Financiamento (Pix Ale)</span> <span class="day">10</span></li>
-      <li><input type="checkbox"> <span>Condomínio (Pix Ale)</span> <span class="day">10</span></li>
-      <li><input type="checkbox"> <span>Enel (Meu e-mail)</span> <span class="day">10</span></li>
-      <li><input type="checkbox"> <span>Claro Celular (App Minha Claro)</span> <span class="day">10</span></li>
-      <li><input type="checkbox"> <span>IPTU (Site da Prefeitura)</span> <span class="day">10</span></li>
-      <li><input type="checkbox"> <span>Vivo (Meu e-mail)</span> <span class="day">17</span></li>
-      <li><input type="checkbox"> <span>Naturgy (Meu e-mail)</span> <span class="day">20</span></li>
-      <li><input type="checkbox"> <span>MEI (App Nu Empresas)</span> <span class="day">20</span></li>
+    <ul id="minhas">
+      <li><input type="checkbox"> <span>Inter (App)</span> <span class="day">05</span> <input type="number" class="valor" placeholder="R$"></li>
+      <li><input type="checkbox"> <span>Nu (App)</span> <span class="day">10</span> <input type="number" class="valor" placeholder="R$"></li>
+      <li><input type="checkbox"> <span>Financiamento (Pix)</span> <span class="day">10</span> <input type="number" class="valor" placeholder="R$"></li>
+      <li><input type="checkbox"> <span>Condomínio (Pix)</span> <span class="day">10</span> <input type="number" class="valor" placeholder="R$"></li>
+      <li><input type="checkbox"> <span>Enel (Meu e-mail)</span> <span class="day">10</span> <input type="number" class="valor" placeholder="R$"></li>
+      <li><input type="checkbox"> <span>Claro Celular (App)</span> <span class="day">10</span> <input type="number" class="valor" placeholder="R$"></li>
+      <li><input type="checkbox"> <span>IPTU (Site da Prefeitura)</span> <span class="day">10</span> <input type="number" class="valor" placeholder="R$"></li>
+      <li><input type="checkbox"> <span>Vivo (Meu e-mail)</span> <span class="day">17</span> <input type="number" class="valor" placeholder="R$"></li>
+      <li><input type="checkbox"> <span>Naturgy (Meu e-mail)</span> <span class="day">20</span> <input type="number" class="valor" placeholder="R$"></li>
+      <li><input type="checkbox"> <span>MEI (App)</span> <span class="day">20</span> <input type="number" class="valor" placeholder="R$"></li>
     </ul>
 
     <h2>Da minha Mãe</h2>
-    <ul>      
-      <li><input type="checkbox"> <span>Claro Internet (Meu e-mail)</span> <span class="day">10</span></li>
-      <li><input type="checkbox"> <span>Água (Meu e-mail)</span> <span class="day">10</span></li>
-      <li><input type="checkbox"> <span>Enel (E-mail dela)</span> <span class="day">10</span></li>
-      <li><input type="checkbox"> <span>Nu (E-mail dela)</span> <span class="day">12</span></li>
+    <ul id="mae">      
+      <li><input type="checkbox"> <span>Claro Internet (Meu e-mail)</span> <span class="day">10</span> <input type="number" class="valor" placeholder="R$"></li>
+      <li><input type="checkbox"> <span>Águas de Niterói (Meu e-mail)</span> <span class="day">10</span> <input type="number" class="valor" placeholder="R$"></li>
+      <li><input type="checkbox"> <span>Enel (E-mail dela)</span> <span class="day">10</span> <input type="number" class="valor" placeholder="R$"></li>
+      <li><input type="checkbox"> <span>Nu (E-mail dela)</span> <span class="day">12</span> <input type="number" class="valor" placeholder="R$"></li>
     </ul>
 
     <div class="actions">
@@ -170,44 +179,50 @@
   </div>
 
   <script>
-    // Data atual
     const hoje = new Date();
-    const options = { month: 'long', year: 'numeric' };
     document.getElementById('today').textContent = 
       "Hoje é: " + hoje.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
-    // Checagem individual com persistência
+    // Salvar e carregar estado dos checkboxes e valores
     document.querySelectorAll('li').forEach((item, index) => {
-      const checkbox = item.querySelector('input');
+      const checkbox = item.querySelector('input[type="checkbox"]');
+      const valor = item.querySelector('.valor');
 
-      // Recupera estado salvo
-      const saved = localStorage.getItem("conta_" + index);
-      if (saved === "true") {
+      // Carregar estado
+      const savedCheck = localStorage.getItem("conta_check_" + index);
+      if (savedCheck === "true") {
         checkbox.checked = true;
         item.classList.add('paid');
       }
 
+      const savedValue = localStorage.getItem("conta_valor_" + index);
+      if (savedValue) valor.value = savedValue;
+
+      // Evento checkbox
       checkbox.addEventListener('change', () => {
         if (checkbox.checked) {
           item.classList.add('paid');
-          localStorage.setItem("conta_" + index, "true");
+          localStorage.setItem("conta_check_" + index, "true");
         } else {
           item.classList.remove('paid');
-          localStorage.setItem("conta_" + index, "false");
+          localStorage.setItem("conta_check_" + index, "false");
         }
+      });
+
+      // Evento valor
+      valor.addEventListener('input', () => {
+        localStorage.setItem("conta_valor_" + index, valor.value);
       });
     });
 
-    // Função para mostrar mensagem "Tudo Pago"
-    function mostrarStatus(mensagem) {
+    function mostrarStatus(mensagemHtml) {
       const container = document.getElementById('statusContainer');
       container.innerHTML = `
         <div class="status">
-          ${mensagem}
+          ${mensagemHtml}
           <button id="removerStatus">Remover</button>
         </div>
       `;
-
       document.getElementById('removerStatus').addEventListener('click', () => {
         localStorage.removeItem("mes_pago");
         container.innerHTML = "";
@@ -220,22 +235,56 @@
       mostrarStatus(statusSalvo);
     }
 
-    // Botão "Tudo Pago"
-    document.getElementById('tudoPagoBtn').addEventListener('click', () => {
-      // Resetar todos os checks
-      document.querySelectorAll('li').forEach((item, index) => {
-        const checkbox = item.querySelector('input');
-        checkbox.checked = false;
-        item.classList.remove('paid');
-        localStorage.setItem("conta_" + index, "false");
-      });
+document.getElementById('tudoPagoBtn').addEventListener('click', () => {
+  let totalMinhas = 0, totalMae = 0;
 
-      // Salvar mensagem
-      const msg = "✅ Mês de " + hoje.toLocaleDateString('pt-BR', options) + " pago";
-      localStorage.setItem("mes_pago", msg);
-      mostrarStatus(msg);
-    });
+  // Resetar minhas contas
+  document.querySelectorAll('#minhas li').forEach((item, index) => {
+    const checkbox = item.querySelector('input[type="checkbox"]');
+    const valorInput = item.querySelector('.valor');
+    const valor = parseFloat(valorInput.value) || 0;
+
+    totalMinhas += valor;
+
+    // resetar checkbox
+    checkbox.checked = false;
+    item.classList.remove('paid');
+    localStorage.setItem("conta_check_" + index, "false");
+
+    // resetar valor
+    valorInput.value = "";
+    localStorage.removeItem("conta_valor_" + index);
+  });
+
+  // Resetar contas da mãe
+  document.querySelectorAll('#mae li').forEach((item, index) => {
+    const realIndex = index + document.querySelectorAll('#minhas li').length;
+    const checkbox = item.querySelector('input[type="checkbox"]');
+    const valorInput = item.querySelector('.valor');
+    const valor = parseFloat(valorInput.value) || 0;
+
+    totalMae += valor;
+
+    // resetar checkbox
+    checkbox.checked = false;
+    item.classList.remove('paid');
+    localStorage.setItem("conta_check_" + realIndex, "false");
+
+    // resetar valor
+    valorInput.value = "";
+    localStorage.removeItem("conta_valor_" + realIndex);
+  });
+
+  const totalGeral = totalMinhas + totalMae;
+  const msg = `
+    ✅ Mês de ${hoje.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })} pago<br>
+    • Minhas contas: R$ ${totalMinhas.toFixed(2)}<br>
+    • Contas da Mãe: R$ ${totalMae.toFixed(2)}<br>
+    • Total: R$ ${totalGeral.toFixed(2)}
+  `;
+  localStorage.setItem("mes_pago", msg);
+  mostrarStatus(msg);
+});
   </script>
 </body>
 </html>
-

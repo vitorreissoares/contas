@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Minhas Contas</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f8f8;
+      margin: 0;
+      padding: 2rem;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 2rem;
+      width: 100%;
+      max-width: 600px;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 0.3rem;
+      color: #333;
+    }
+
+    .date {
+      font-size: 0.9rem;
+      color: #777;
+      margin-bottom: 1.5rem;
+      text-align: right;
+    }
+
+    h2 {
+      font-size: 1.2rem;
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+      color: #555;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 0.3rem;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      display: flex;
+      align-items: center;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid #f0f0f0;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    li:last-child {
+      border-bottom: none;
+    }
+
+    li:hover {
+      background: #f9f9f9;
+    }
+
+    input[type="checkbox"] {
+      margin-right: 0.8rem;
+      transform: scale(1.2);
+      cursor: pointer;
+    }
+
+    .paid {
+      text-decoration: line-through;
+      color: #999;
+    }
+
+    .day {
+      font-weight: bold;
+      color: #ff385c;
+      margin-left: auto;
+    }
+
+    .actions {
+      margin-top: 1.5rem;
+      text-align: center;
+    }
+
+    button {
+      background: #ff385c;
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: #e62e50;
+    }
+
+    .status {
+      margin-top: 1rem;
+      padding: 0.8rem;
+      background: #e6ffe6;
+      border: 1px solid #b2ffb2;
+      border-radius: 8px;
+      color: #2e7d32;
+      font-weight: bold;
+      text-align: center;
+      position: relative;
+    }
+
+    .status button {
+      background: transparent;
+      color: #2e7d32;
+      font-size: 0.8rem;
+      padding: 0.3rem 0.6rem;
+      border: 1px solid #2e7d32;
+      border-radius: 6px;
+      cursor: pointer;
+      position: absolute;
+      top: 8px;
+      right: 8px;
+    }
+
+    .status button:hover {
+      background: #2e7d32;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📅 Controle de Contas</h1>
+    <div class="date" id="today"></div>
+
+    <h2>Minhas</h2>
+    <ul>
+      <li><input type="checkbox"> <span>Inter (Meu e-mail)</span> <span class="day">05</span></li>
+      <li><input type="checkbox"> <span>Nu (Meu e-mail)</span> <span class="day">10</span></li>
+      <li><input type="checkbox"> <span>Financiamento (Pix Ale)</span> <span class="day">10</span></li>
+      <li><input type="checkbox"> <span>Condomínio (Pix Ale)</span> <span class="day">10</span></li>
+      <li><input type="checkbox"> <span>Enel (Meu e-mail)</span> <span class="day">10</span></li>
+      <li><input type="checkbox"> <span>Claro Celular (App Minha Claro)</span> <span class="day">10</span></li>
+      <li><input type="checkbox"> <span>IPTU (Site da Prefeitura)</span> <span class="day">10</span></li>
+      <li><input type="checkbox"> <span>Vivo (Meu e-mail)</span> <span class="day">17</span></li>
+      <li><input type="checkbox"> <span>Naturgy (Meu e-mail)</span> <span class="day">20</span></li>
+      <li><input type="checkbox"> <span>MEI (App Nu Empresas)</span> <span class="day">20</span></li>
+    </ul>
+
+    <h2>Da Mãe</h2>
+    <ul>      
+      <li><input type="checkbox"> <span>Claro Internet (Meu e-mail)</span> <span class="day">10</span></li>
+      <li><input type="checkbox"> <span>Água (Meu e-mail)</span> <span class="day">10</span></li>
+      <li><input type="checkbox"> <span>Enel (E-mail dela)</span> <span class="day">10</span></li>
+      <li><input type="checkbox"> <span>Nu (E-mail dela)</span> <span class="day">12</span></li>
+    </ul>
+
+    <div class="actions">
+      <button id="tudoPagoBtn">✅ Tudo Pago</button>
+    </div>
+
+    <div id="statusContainer"></div>
+  </div>
+
+  <script>
+    // Data atual
+    const hoje = new Date();
+    const options = { month: 'long', year: 'numeric' };
+    document.getElementById('today').textContent = 
+      "Hoje é: " + hoje.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+    // Checagem individual com persistência
+    document.querySelectorAll('li').forEach((item, index) => {
+      const checkbox = item.querySelector('input');
+
+      // Recupera estado salvo
+      const saved = localStorage.getItem("conta_" + index);
+      if (saved === "true") {
+        checkbox.checked = true;
+        item.classList.add('paid');
+      }
+
+      checkbox.addEventListener('change', () => {
+        if (checkbox.checked) {
+          item.classList.add('paid');
+          localStorage.setItem("conta_" + index, "true");
+        } else {
+          item.classList.remove('paid');
+          localStorage.setItem("conta_" + index, "false");
+        }
+      });
+    });
+
+    // Função para mostrar mensagem "Tudo Pago"
+    function mostrarStatus(mensagem) {
+      const container = document.getElementById('statusContainer');
+      container.innerHTML = `
+        <div class="status">
+          ${mensagem}
+          <button id="removerStatus">Remover</button>
+        </div>
+      `;
+
+      document.getElementById('removerStatus').addEventListener('click', () => {
+        localStorage.removeItem("mes_pago");
+        container.innerHTML = "";
+      });
+    }
+
+    // Carregar status salvo
+    const statusSalvo = localStorage.getItem("mes_pago");
+    if (statusSalvo) {
+      mostrarStatus(statusSalvo);
+    }
+
+    // Botão "Tudo Pago"
+    document.getElementById('tudoPagoBtn').addEventListener('click', () => {
+      // Resetar todos os checks
+      document.querySelectorAll('li').forEach((item, index) => {
+        const checkbox = item.querySelector('input');
+        checkbox.checked = false;
+        item.classList.remove('paid');
+        localStorage.setItem("conta_" + index, "false");
+      });
+
+      // Salvar mensagem
+      const msg = "✅ Mês de " + hoje.toLocaleDateString('pt-BR', options) + " pago";
+      localStorage.setItem("mes_pago", msg);
+      mostrarStatus(msg);
+    });
+  </script>
+</body>
+</html>
